@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:stable
+    # restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-networks
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: "npm run dev"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-networks
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_HOST=db
+      - DATABASE_NAME=tabe_nabi
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=password
+      - DATABASE_PORT=3306
+      - TZ=Asia/Tokyo
+      - LANG=c.UTF-8
+    depends_on:
+      - db
+    networks:
+      - app-networks
+    command: "bundle exec rails s -b 0.0.0.0 -p 3001"
+
+  db:
+    image: mysql:8.0
+    # restart: always
+    environment:
+      TZ: Asia/Tokyo
+      LANG: c.UTF-8
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: tabe_nabi
+    ports:
+      - "3306:3306"
+    networks:
+      - app-networks
+
+    volumes:
+      - tabe_nabi_db-data:/var/lib/mysql
+
+volumes:
+  tabe_nabi_db-data:
+
+
+networks:
+  app-networks:
+    driver: bridge
