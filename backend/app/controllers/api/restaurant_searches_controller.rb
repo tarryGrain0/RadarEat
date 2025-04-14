@@ -1,5 +1,3 @@
-require 'httparty'
-
 class Api::RestaurantSearchesController < ApplicationController
     def index
       query = params[:q].to_s
@@ -76,6 +74,56 @@ class Api::RestaurantSearchesController < ApplicationController
         end
       rescue => e
         Rails.logger.error "Error in location action: #{e.class} - #{e.message}"
+        render json: { error: "Internal Server Error", details: e.message }, status: 500
+      end
+    end
+
+    def show
+      shop_id = params[:id]
+      api_key = ENV['HOTPEPPER_API_KEY']
+
+      begin
+        Rails.logger.info "Requesting Hotpepper API for shop_id: #{shop_id}"
+
+        response = HTTParty.get("https://webservice.recruit.co.jp/hotpepper/gourmet/v1/", {
+          query: {
+            key: api_key,
+            id: shop_id,
+            format: "json"
+          }
+        })
+
+        json = JSON.parse(response.body)
+        shop = json.dig("results", "shop", 0)
+
+        if shop
+          render json: {
+            logo_image: shop.dig("logo_image") || "/no-image.png",
+            id: shop["id"],
+            name: shop["name"],
+            address: shop["address"],
+            url: shop["urls"]["pc"],
+            access: shop["access"],
+            genre: shop.dig("genre").is_a?(Hash) ? shop["genre"]["name"] : shop.dig("genre") || '情報なし',
+            sub_genre: shop.dig("sub_genre").is_a?(Hash) ? shop["sub_genre"]["name"] : shop.dig("sub_genre") || '情報なし',
+            budget: shop.dig("budget").is_a?(Hash) ? shop["budget"]["average"] : shop.dig("budget"),
+            open: shop.dig("open"),
+            close: shop.dig("close"),
+            capacity: shop.dig("capacity"),
+            course: shop.dig("course"),
+            free_drink: shop.dig("free_drink"),
+            free_food: shop.dig("free_food"),
+            private_room: shop.dig("private_room"),
+            card: shop.dig("card"),
+            non_smoking: shop.dig("non_smoking"),
+            parking: shop.dig("parking"),
+            child: shop.dig("child")
+          }
+        else
+          render json: { error: "Shop not found" }, status: :not_found
+        end
+      rescue => e
+        Rails.logger.error "Error in show action: #{e.class} - #{e.message}"
         render json: { error: "Internal Server Error", details: e.message }, status: 500
       end
     end

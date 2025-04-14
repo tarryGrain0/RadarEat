@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import Link from 'next/link'
 
 type Props = {
     results: { id: number; name: string; address: string; logo_image: string; access: string }[]
@@ -39,7 +40,11 @@ export default function SearchResultsComponent({ results, currentPage, totalPage
                                 )}
                             </div>
                             <div>
-                                <div className="font-semibold">{r.name}</div>
+                                <div className="font-semibold">
+                                    <Link href={`/detail/${r.id}`} className="hover:underline hover:text-blue-600">
+                                        {r.name}
+                                    </Link>
+                                </div>
                                 <div className="text-sm text-gray-600 mt-5">住所：{r.address}</div>
                                 <div className="text-sm text-gray-600 mt-1">アクセス：{access}</div>
                             </div>
