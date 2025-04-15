@@ -10,7 +10,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full px-6 py-4 bg-white/70 shadow-md flex flex-wrap items-center justify-between">
       <Link href="/" className="text-2xl sm:text-3xl font-bold text-orange-500">
-        Tabenavi
+        RaderEat
       </Link>
 
       <button
