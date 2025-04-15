@@ -34,7 +34,7 @@ export default function DetailPage() {
         const fetchShopDetail = async () => {
             try {
                 const id = params.id
-                const response = await fetch(`http://localhost:3001/api/restaurant_searches/${id}`)
+                const response = await fetch(`/api/restaurant_searches/${id}`)
                 if (!response.ok) {
                     throw new Error('Network response was not ok')
                 }
@@ -49,7 +49,13 @@ export default function DetailPage() {
     }, [params.id])
 
     if (error) return <p>{error}</p>
-    if (!shop) return <p>読み込み中...</p>
+    if (!shop) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+            </div>
+        );
+    }
 
     return (
         <main className="p-6 max-w-2xl mx-auto">
