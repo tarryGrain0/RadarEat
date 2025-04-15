@@ -1,41 +1,45 @@
 "use client"
-import { useState } from 'react'
-import SearchBar, { LocationSearchQuery } from './components/SearchBarComponent'
 import { useRouter } from 'next/navigation'
+import SearchBar, { LocationSearchQuery } from './components/SearchBarComponent'
 
 export default function Home() {
   const router = useRouter();
 
-  const [lastQuery, setLastQuery] = useState<LocationSearchQuery | null>(null)
-
-  const fetchResults = async (query: LocationSearchQuery, page: number) => {
-    const res = await fetch('http://localhost:3001/api/restaurant_searches/location', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        latitude: query.latitude,
-        longitude: query.longitude,
-        range: query.range,
-        page,
-      }),
-    })
+  const handleSearch = (query: LocationSearchQuery) => {
+    const queryString = `?latitude=${query.latitude}&longitude=${query.longitude}&range=3&page=1`
+    router.push(`/search${queryString}`)
   }
 
-  const handleSearch = (query: LocationSearchQuery) => {
-    setLastQuery(query)
-    router.push(`/search?latitude=${query.latitude}&longitude=${query.longitude}&range=${query.range}`);
+  const handleGeolocationSearch = () => {
+    if (!navigator.geolocation) {
+      alert('このブラウザでは位置情報が取得できません。')
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const query: LocationSearchQuery = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          range: 1,
+        }
+        handleSearch(query)
+      },
+      (error) => {
+        console.error('位置情報の取得に失敗しました:', error)
+        alert('位置情報の取得に失敗しました。')
+      }
+    )
   }
 
   return (
     <main>
       <section className="relative bg-cover bg-center min-h-screen w-full px-4"
-      // style={{ backgroundImage: "url('/images/bg-main.png')" }}
+        style={{ backgroundImage: "url('/images/bg-main.png')" }}
       >
         <div className="absolute inset-0 bg-white/10 backdrop-blur-sm z-10" />
         <div className="relative z-20 flex flex-col items-center justify-center text-center min-h-screen">
-          <div className='bg-white/40 mb-4 p-4 rounded-lg shadow-lg'>
+          <div className='bg-white/40 mb-5 p-4 rounded-lg shadow-lg'>
             <h1 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-5">
               日常に、小さな発見を
             </h1>
@@ -43,13 +47,18 @@ export default function Home() {
               その場所から、あなたにぴったりの一軒へ
             </h2>
           </div>
-          <SearchBar onSearch={handleSearch} />
+          <button
+            onClick={handleGeolocationSearch}
+            className="text-sm sm:text-2xl px-6 py-4 w-72 sm:w-96 bg-orange-500 text-white hover:text-orange-500 rounded mt-4 shadow-lg hover:bg-white rounded border-2 border-white hover:border-orange-400 transition duration-300"
+          >
+            近くのお店を探す
+          </button>
         </div>
       </section>
 
       <div className="text-center max-w-2xl mx-auto text-gray-600">
         <p className="mb-2">
-          Tabenaviは、あなたの近くのレストラン情報を素早く提供します。
+          RaderEatは、あなたの近くのレストラン情報を素早く提供します。
         </p>
         <p>
           まだ出会ったことのないお店、料理との出会いを提供します。
@@ -69,7 +78,6 @@ export default function Home() {
           <p>お気に入り保存や履歴確認などができるようになります</p>
         </div>
       </section>
-
     </main>
   )
 }
