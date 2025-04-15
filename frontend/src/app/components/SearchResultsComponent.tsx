@@ -1,26 +1,53 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 type Props = {
-    results: { id: number; name: string; address: string; logo_image: string; access: string }[]
+    results: { id: string; name: string; address: string; logo_image: string; access: string }[]
     currentPage: number
     totalPages: number
+    totalAvailable: number
     onPageChange: (page: number) => void
+    isLoading: boolean
 }
 
-export default function SearchResultsComponent({ results, currentPage, totalPages, onPageChange }: Props) {
+export default function SearchResultsComponent({ results, currentPage, totalPages, totalAvailable, onPageChange, isLoading }: Props) {
+
+    const hasRestoredRef = useRef(false);
+    const searchParams = useSearchParams();
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [currentPage]);
+        if (!hasRestoredRef.current && results.length > 0) {
+            const savedY = sessionStorage.getItem(`scrollY:${window.location.pathname}`);
+            if (savedY) {
+                window.scrollTo(0, parseInt(savedY, 10));
+                hasRestoredRef.current = true;
+            }
+        }
+    }, [results]);
 
     totalPages = Math.max(totalPages, 1);
 
+    if (isLoading && (!results || results.length === 0)) return null;
+
     return (
         <>
+            {!isLoading && results.length > 0 && (
+                <div className="flex justify-end mb-4">
+                    <p className="text-sm text-gray-600">
+                        {totalAvailable} 件見つかりました
+                    </p>
+                </div>
+            )}
+
+            {!isLoading && results && results.length === 0 && searchParams.toString().length > 0 && (
+                <div className="text-center text-xl text-gray-500 mt-10">
+                    お探しの条件では見つかりませんでした
+                </div>
+            )}
             <ul className="space-y-2">
                 {(results || []).map((r) => {
-                    const access = r.access; // Directly extract access from shop object
+                    const access = r.access;
                     return (
                         <li key={r.id} className="border p-4 rounded shadow-sm flex items-start gap-4">
                             <div className="relative w-32 h-24 bg-gray-100 overflow-hidden rounded">
@@ -56,7 +83,10 @@ export default function SearchResultsComponent({ results, currentPage, totalPage
             {results.length > 0 && (
                 <div className="flex justify-center gap-4 mt-6">
                     <button
-                        onClick={() => onPageChange(currentPage - 1)}
+                        onClick={() => {
+                            onPageChange(currentPage - 1);
+                            window.scrollTo(0, 0);
+                        }}
                         disabled={currentPage === 1}
                         className="px-4 py-2 border rounded"
                     >
@@ -64,7 +94,10 @@ export default function SearchResultsComponent({ results, currentPage, totalPage
                     </button>
                     <span>{currentPage} / {totalPages}</span>
                     <button
-                        onClick={() => onPageChange(currentPage + 1)}
+                        onClick={() => {
+                            onPageChange(currentPage + 1);
+                            window.scrollTo(0, 0);
+                        }}
                         disabled={currentPage === totalPages}
                         className="px-4 py-2 border rounded"
                     >
