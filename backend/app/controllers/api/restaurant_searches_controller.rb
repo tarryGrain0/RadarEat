@@ -65,7 +65,8 @@ class Api::RestaurantSearchesController < ApplicationController
           render json: {
             results: shops.map { |shop| shop.merge(logo_image: shop[:logo_image].present? ? shop[:logo_image] : '/no-image.png') },
             currentPage: page,
-            totalCount: total_count,
+            totalCount: shops.length,
+            totalAvailable: total_count,
             totalPages: total_pages,
             raw: json
           }
