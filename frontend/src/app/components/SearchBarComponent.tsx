@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 export type LocationSearchQuery = {
   latitude: number
@@ -9,8 +10,10 @@ export type LocationSearchQuery = {
 }
 
 export default function SearchBarComponent({ onSearch }: { onSearch: (query: LocationSearchQuery) => void }) {
+  const searchParams = useSearchParams()
+  const initialRange = parseInt(searchParams.get('range') || '3')
+  const [range, setRange] = useState<number>(!isNaN(initialRange) ? initialRange : 3)
   const [error, setError] = useState('')
-  const [range, setRange] = useState(3)
 
   const handleGeolocationSearch = () => {
     if (!navigator.geolocation) {
@@ -53,11 +56,12 @@ export default function SearchBarComponent({ onSearch }: { onSearch: (query: Loc
         </select>
       </div>
 
-      <div className="mb-2 text-right">
+      <div className="mb-2 flex justify-center">
         <button
           type="button"
           onClick={handleGeolocationSearch}
-          className="bg-blue-500 text-white px-4 py-2 rounded text-xs sm:text-sm"
+          className="bg-orange-500 text-white text-sm sm:text-base px-6 py-2 w-72 sm:w-96 
+                     rounded shadow-lg border-2 border-white hover:bg-white hover:text-orange-500 hover:border-orange-400 transition duration-300"
         >
           現在地で検索
         </button>
