@@ -1,5 +1,6 @@
 class User < ApplicationRecord
     has_secure_password
+    has_many :bookmarks, dependent: :destroy
   
     # メールアドレス: 必須・一意・形式チェック
     validates :email,

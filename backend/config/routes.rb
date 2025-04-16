@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     end
     resources :users, only: [:create, :destroy]
     post 'login', to: 'sessions#create'
+
+    resources :bookmarks, only: [:index, :create, :destroy]
+    get 'bookmarks/list', to: 'bookmarks#list'
   end
 
 end

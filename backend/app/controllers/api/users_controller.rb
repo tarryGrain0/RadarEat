@@ -15,7 +15,7 @@ class Api::UsersController < ApplicationController
           secure: Rails.env.production?
         }
 
-        render json: { message: 'User created and logged in' }, status: :created
+        render json: { message: 'User created and logged in', token: token }, status: :created
       else
         render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
       end

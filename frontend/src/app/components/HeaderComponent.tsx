@@ -4,14 +4,18 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { FiMenu } from "react-icons/fi";
 import { IoIosCloseCircleOutline } from "react-icons/io";
+import { IoBookmarks } from "react-icons/io5";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(() => document.cookie.includes('authToken='))
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
+    const hasToken = typeof document !== 'undefined' && document.cookie.includes('authToken=')
+    setIsLoggedIn(hasToken)
+
     const interval = setInterval(() => {
-      const hasToken = document.cookie.includes('authToken=')
+      const hasToken = typeof document !== 'undefined' && document.cookie.includes('authToken=')
       setIsLoggedIn(hasToken)
     }, 500)
 
@@ -51,12 +55,21 @@ export default function Header() {
         onClick={() => setIsOpen(false)}
       >
         {isLoggedIn ? (
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-6 py-2 rounded-md shadow hover:bg-red-600 transition text-sm text-center"
-          >
-            ログアウト
-          </button>
+          <>
+            <Link
+              href="/bookmarks"
+              className="flex items-center gap-1 text-orange-500 border border-orange-500 px-4 py-2 rounded-md hover:bg-orange-100 transition text-sm"
+            >
+              <IoBookmarks />
+              ブックマーク
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-6 py-2 rounded-md shadow hover:bg-red-600 transition text-sm text-center"
+            >
+              ログアウト
+            </button>
+          </>
         ) : (
           <>
             <Link

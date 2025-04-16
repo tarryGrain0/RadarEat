@@ -29,8 +29,12 @@ export default function DetailPage() {
     const params = useParams()
     const [shop, setShop] = useState<ShopDetail | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [isBookmarked, setIsBookmarked] = useState(false)
+    const [bookmarkError, setBookmarkError] = useState('')
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
 
     useEffect(() => {
+        setIsLoggedIn(document.cookie.includes('authToken='))
         const fetchShopDetail = async () => {
             try {
                 const id = params.id
@@ -40,6 +44,13 @@ export default function DetailPage() {
                 }
                 const data: ShopDetail = await response.json()
                 setShop(data)
+
+                const bookmarkRes = await fetch('/api/bookmarks')
+                if (bookmarkRes.ok) {
+                    const bookmarks = await bookmarkRes.json()
+                    const bookmarked = bookmarks.some((b: any) => b.restaurant_id === data.id)
+                    setIsBookmarked(bookmarked)
+                }
             } catch (error) {
                 setError('Failed to fetch shop details')
             }
@@ -67,6 +78,46 @@ export default function DetailPage() {
                         alt={shop.name}
                         className="max-w-xs w-full h-auto rounded shadow-lg"
                     />
+                </div>
+            )}
+            {isLoggedIn && (
+                <div className="flex justify-end mb-4">
+                    <button
+                        className={`px-4 py-2 rounded transition ${isBookmarked
+                            ? 'bg-gray-400 text-white hover:bg-gray-500'
+                            : 'bg-orange-500 text-white hover:bg-orange-600'
+                            }`}
+                        onClick={async () => {
+                            try {
+                                if (!isBookmarked) {
+                                    const res = await fetch('/api/bookmarks', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ restaurant_id: shop.id }),
+                                    })
+                                    if (!res.ok) throw new Error()
+                                    setIsBookmarked(true)
+                                    setBookmarkError('')
+                                } else {
+                                    const bookmarksRes = await fetch('/api/bookmarks')
+                                    const bookmarks = await bookmarksRes.json()
+                                    const bookmark = bookmarks.find((b: any) => b.restaurant_id === shop.id)
+                                    if (!bookmark) return
+                                    const delRes = await fetch(`/api/bookmarks/${bookmark.id}`, {
+                                        method: 'DELETE',
+                                    })
+                                    if (!delRes.ok) throw new Error()
+                                    setIsBookmarked(false)
+                                    setBookmarkError('')
+                                }
+                            } catch (e) {
+                                setBookmarkError('ログインが必要です')
+                            }
+                        }}
+                    >
+                        {isBookmarked ? '★ 登録済み' : '☆ ブックマーク'}
+                    </button>
+                    {bookmarkError && <p className="text-red-500 mt-2">{bookmarkError}</p>}
                 </div>
             )}
             <p className="mb-2 text-gray-700">住所: {shop.address}</p>
