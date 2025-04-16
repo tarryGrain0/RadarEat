@@ -74,6 +74,7 @@ GEM
       uri (>= 0.13.1)
     ast (2.4.3)
     base64 (0.2.0)
+    bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.1)
     bcrypt_pbkdf (1.1.1-arm64-darwin)
     benchmark (0.4.0)
@@ -117,6 +118,8 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.10.2)
+    jwt (2.10.1)
+      base64
     kamal (2.5.3)
       activesupport (>= 7.0)
       base64 (~> 0.2)
@@ -319,11 +322,13 @@ PLATFORMS
   arm64-darwin-22
 
 DEPENDENCIES
+  bcrypt
   bootsnap
   brakeman
   debug
   dotenv-rails
   httparty
+  jwt
   kamal
   kaminari
   mysql2 (~> 0.5.5)

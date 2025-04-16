@@ -1,4 +1,8 @@
 class Api::RestaurantSearchesController < ApplicationController
+    
+    # GET /api/restaurant_searches
+    # 店舗検索機能
+    # 検索キーワードを元に、Hotpepper APIから店舗情報を取得し、結果を返す（フロントエンド未実装）
     def index
       query = params[:q].to_s
       page = params[:page] || 1
@@ -18,6 +22,8 @@ class Api::RestaurantSearchesController < ApplicationController
       }
     end
 
+    # POST /api/restaurant_searches/location
+    # 店舗検索機能（位置情報）
     def location
       lat = params[:latitude]
       lng = params[:longitude]
@@ -79,6 +85,8 @@ class Api::RestaurantSearchesController < ApplicationController
       end
     end
 
+    # GET /api/restaurant_searches/:id
+    # 店舗詳細情報取得
     def show
       shop_id = params[:id]
       api_key = ENV['HOTPEPPER_API_KEY']
@@ -99,7 +107,7 @@ class Api::RestaurantSearchesController < ApplicationController
 
         if shop
           render json: {
-            logo_image: shop.dig("logo_image") || "/no-image.png",
+            logo_image: shop.dig("photo", "pc", "l") || "/no-image.png",
             id: shop["id"],
             name: shop["name"],
             address: shop["address"],
