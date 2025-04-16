@@ -94,7 +94,7 @@ export default function LoginPage() {
                 />
                 {validationErrors.password && <p className="text-red-500 text-sm">{validationErrors.password}</p>}
                 <div className="flex justify-center">
-                    <button type="submit" className="bg-orange-500 text-white px-4 py-2 rounded">
+                    <button type="submit" className="bg-orange-500 sm:w-90 text-white px-4 py-2 rounded">
                         ログイン
                     </button>
                 </div>
