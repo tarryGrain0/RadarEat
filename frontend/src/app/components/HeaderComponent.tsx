@@ -1,12 +1,28 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FiMenu } from "react-icons/fi";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => document.cookie.includes('authToken='))
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const hasToken = document.cookie.includes('authToken=')
+      setIsLoggedIn(hasToken)
+    }, 500)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleLogout = () => {
+    document.cookie = "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    setIsLoggedIn(false)
+  }
+
   return (
     <header className="sticky top-0 z-40 w-full px-6 py-4 bg-white/70 shadow-md flex flex-wrap items-center justify-between">
       <Link href="/" className="text-2xl sm:text-3xl font-bold text-orange-500">
@@ -34,18 +50,29 @@ export default function Header() {
                   items-center sm:items-center py-5 sm:py-0`}
         onClick={() => setIsOpen(false)}
       >
-        <Link
-          href="/login"
-          className="bg-orange-500 text-white px-6 py-2 rounded-md shadow hover:bg-orange-500 transition text-sm text-center"
-        >
-          Log In
-        </Link>
-        <Link
-          href="/signup"
-          className="border border-orange-500 text-orange-500 px-6 py-2 rounded-md hover:bg-orange-100 text-sm transition text-center"
-        >
-          Sign Up
-        </Link>
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-6 py-2 rounded-md shadow hover:bg-red-600 transition text-sm text-center"
+          >
+            ログアウト
+          </button>
+        ) : (
+          <>
+            <Link
+              href="/login"
+              className="bg-orange-500 text-white px-6 py-2 rounded-md shadow hover:bg-orange-500 transition text-sm text-center"
+            >
+              Log In
+            </Link>
+            <Link
+              href="/signup"
+              className="border border-orange-500 text-orange-500 px-6 py-2 rounded-md hover:bg-orange-100 text-sm transition text-center"
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
       </nav>
     </header >
   )

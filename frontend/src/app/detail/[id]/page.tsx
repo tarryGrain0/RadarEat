@@ -59,16 +59,16 @@ export default function DetailPage() {
 
     return (
         <main className="p-6 max-w-2xl mx-auto">
-            <div className="flex items-center gap-3 mb-4">
-                {shop.logo_image && (
+            <h1 className="text-3xl font-bold mb-4">{shop.name}</h1>
+            {shop.logo_image && (
+                <div className="flex justify-center mb-4 bg-gray-600 rounded shadow border-2 border-white-500">
                     <img
                         src={shop.logo_image}
                         alt={shop.name}
-                        className="h-10 w-auto rounded shadow"
+                        className="max-w-xs w-full h-auto rounded shadow-lg"
                     />
-                )}
-                <h1 className="text-3xl font-bold">{shop.name}</h1>
-            </div>
+                </div>
+            )}
             <p className="mb-2 text-gray-700">住所: {shop.address}</p>
             <p className="mb-2 text-gray-700">アクセス: {shop.access}</p>
             {shop.url && (

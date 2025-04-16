@@ -51,4 +51,6 @@ group :development, :test do
   gem 'rack-cors'
   gem 'httparty'
   gem 'dotenv-rails'
+  gem 'bcrypt'
+  gem 'jwt'
 end
