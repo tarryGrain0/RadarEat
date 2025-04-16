@@ -87,7 +87,6 @@ export default function SignupPage() {
                 throw new Error(data.errors?.join('、') || '登録に失敗しました')
             }
 
-            // クッキーに保存（HttpOnlyではない）
             document.cookie = `authToken=${data.token}; path=/; max-age=604800`
 
             router.push('/search')

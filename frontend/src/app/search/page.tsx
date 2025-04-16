@@ -46,7 +46,7 @@ export default function SearchPage() {
     const handlePageChange = (newPage: number) => {
         const params = new URLSearchParams(window.location.search)
         params.set('page', newPage.toString())
-        window.scrollTo({ top: 0 }) // Scroll to top
+        window.scrollTo({ top: 0 })
         window.history.pushState(null, '', `/search?${params.toString()}`)
         setPage(newPage)
     }
