@@ -90,7 +90,7 @@ export default function Home() {
         <div className='mb-5'>
           <h3 className="text-2xl font-semibold mb-2 mt-10">ユーザー登録でさらに便利に</h3>
           <p>お気に入り保存ができるようになります</p>
-          <img src="/images/RaderEat_logo.png" alt="RaderEatロゴ画像" className="mx-auto mt-4 max-w-xs" />
+          <img src="/images/RadarEat_logo.png" alt="RadarEatロゴ画像" className="mx-auto mt-4 max-w-xs" />
         </div>
       </div>
     </main>

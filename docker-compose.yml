@@ -37,7 +37,7 @@ services:
     environment:
       - RAILS_ENV=development
       - DATABASE_HOST=db
-      - DATABASE_NAME=tabe_nabi
+      - DATABASE_NAME=radar_eat
       - DATABASE_USER=root
       - DATABASE_PASSWORD=password
       - DATABASE_PORT=3306
@@ -58,17 +58,17 @@ services:
       TZ: Asia/Tokyo
       LANG: c.UTF-8
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: tabe_nabi
+      MYSQL_DATABASE: radar_eat
     ports:
       - "3306:3306"
     networks:
       - app-networks
 
     volumes:
-      - tabe_nabi_db-data:/var/lib/mysql
+      - radar_eat_db-data:/var/lib/mysql
 
 volumes:
-  tabe_nabi_db-data:
+  radar_eat_db-data:
 
 
 networks:
